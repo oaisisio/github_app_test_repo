@@ -1,0 +1,24 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Do NOT ignore .env.example (it should be tracked)
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
