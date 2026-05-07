@@ -1,0 +1,4 @@
+# Environment
+.env
+.env.local
+# .env.example should be committed — do not add it here
