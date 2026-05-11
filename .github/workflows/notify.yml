@@ -1,0 +1,12 @@
+name: Notify Repository Dispatch
+
+on:
+  repository_dispatch:
+    types: [notify]
+
+jobs:
+  echo-payload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo client payload
+        run: echo "${{ toJson(github.event.client_payload) }}"
