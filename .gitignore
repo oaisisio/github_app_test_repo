@@ -1,0 +1,5 @@
+# Environment files with real secrets
+.env
+.env.test
+.env.local
+.env.*.local
