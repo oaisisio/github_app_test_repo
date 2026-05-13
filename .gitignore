@@ -1,0 +1,27 @@
+# Environment files — never commit real credentials
+.env
+.env.local
+.env.production
+.env.staging
+
+# Keep .env.test (contains only placeholder values for testing)
+# !.env.test is implied by not matching the pattern above
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
