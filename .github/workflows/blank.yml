@@ -17,7 +17,7 @@ on:
     inputs:
       environment:
         description: 'Target environment'
-        required: false
+        required: true
         default: 'production'
 
       version:
