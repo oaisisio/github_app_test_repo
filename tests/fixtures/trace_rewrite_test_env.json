@@ -1,0 +1,62 @@
+{
+  "description": "Test fixture for Datadog trace query rewrite pipeline. Documents the scenario where metric tag values containing reserved characters are converted to wildcard patterns for trace search queries.",
+  "incident_context": {
+    "customer_id": "92646e48-3ca7-4442-9ca4-61af3354d3fb",
+    "issue": "Wildcard character '?' replaces reserved characters ('_', '-', '{', '}') in resource names, but patterns fail to match actual trace spans when character counts differ (e.g., metric tag '_post_id' vs trace '{post_id}')."
+  },
+  "test_cases": [
+    {
+      "id": "reserved_char_underscore_and_braces",
+      "description": "Metric tag uses underscores where trace resource uses braces around path parameters",
+      "input": {
+        "service": "sinatra",
+        "environment": "prod",
+        "metric_tag_value": "GET_/posts/_post_id/guest-order"
+      },
+      "expected": {
+        "trace_resource_name": "GET /posts/{post_id}/guest-order",
+        "wildcard_pattern": "GET?/posts/?post_id?/guest?order",
+        "trace_search_query": "@_top_level:1 service:sinatra resource_name:GET?/posts/?post_id?/guest?order"
+      },
+      "notes": "The '?' wildcard replaces single reserved characters. Pattern fails when '_post_id' (8 chars) maps to '{post_id}' (9 chars) because '?' matches exactly one character."
+    },
+    {
+      "id": "reserved_char_hyphen",
+      "description": "Metric tag with hyphen in path segment",
+      "input": {
+        "service": "sinatra",
+        "environment": "prod",
+        "metric_tag_value": "POST_/users/_user_id/check-in"
+      },
+      "expected": {
+        "trace_resource_name": "POST /users/{user_id}/check-in",
+        "wildcard_pattern": "POST?/users/?user_id?/check?in",
+        "trace_search_query": "@_top_level:1 service:sinatra resource_name:POST?/users/?user_id?/check?in"
+      },
+      "notes": "Hyphen '-' is also replaced by '?' wildcard. In this case 'check-in' matches correctly since hyphen is a single character replacement."
+    },
+    {
+      "id": "multiple_path_params_with_braces",
+      "description": "Multiple path parameters where braces cause character count mismatch",
+      "input": {
+        "service": "sinatra",
+        "environment": "prod",
+        "metric_tag_value": "GET_/shops/_shop_id/orders/_order_id"
+      },
+      "expected": {
+        "trace_resource_name": "GET /shops/{shop_id}/orders/{order_id}",
+        "wildcard_pattern": "GET?/shops/?shop_id?/orders/?order_id?",
+        "trace_search_query": "@_top_level:1 service:sinatra resource_name:GET?/shops/?shop_id?/orders/?order_id?"
+      },
+      "notes": "Each brace pair '{' and '}' is replaced by a single '?', but the actual trace has both opening and closing braces adding extra characters that '?' cannot account for."
+    }
+  ],
+  "reserved_characters": {
+    "_": "Replaced by '?' - used as space separator in metric tags",
+    "-": "Replaced by '?' - hyphen in path segments",
+    "{": "Replaced by '?' - opening brace for path parameters in trace resource names",
+    "}": "Replaced by '?' - closing brace for path parameters in trace resource names"
+  },
+  "function_under_test": "_process_datadog_trace_tag_filter_value",
+  "known_issue": "When metric tag value uses '_' as a placeholder for characters that map to '{' or '}' in the actual trace resource name, the generated wildcard pattern has a different character count than the real resource name, causing match failures."
+}
