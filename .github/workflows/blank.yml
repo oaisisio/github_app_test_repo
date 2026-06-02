@@ -19,6 +19,11 @@ on:
         required: false
         default: ''
 
+      workflow:
+        description: 'workflow to esecute'
+        required: true
+        default: ''
+
 jobs:
   build:
     runs-on: ubuntu-latest
