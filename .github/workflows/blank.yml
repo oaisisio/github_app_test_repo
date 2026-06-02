@@ -16,7 +16,7 @@ on:
 
       version:
         description: 'Version to deploy/rollback to'
-        required: false
+        required: true
         default: ''
 
       workflow:
